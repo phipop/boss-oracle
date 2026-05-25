@@ -3,3 +3,10 @@ npm-debug.log*
 coverage/
 .env
 *.log
+
+# SQLite database files
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+data/

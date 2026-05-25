@@ -14,10 +14,12 @@ describe('POST /register', () => {
     app = createApp({ store });
   });
 
+  const GOOD_PASSWORD = 'Sup3rSecret!';
+
   test('201: creates a user and returns it without password/hash', async () => {
     const res = await request(app)
       .post('/register')
-      .send({ email: 'alice@example.com', password: 'supersecret', name: 'Alice' });
+      .send({ email: 'alice@example.com', password: GOOD_PASSWORD, name: 'Alice' });
 
     expect(res.status).toBe(201);
     expect(res.body).toMatchObject({
@@ -33,21 +35,21 @@ describe('POST /register', () => {
     // Stored password is hashed, not plaintext, and verifies with bcrypt
     const stored = await store.findByEmail('alice@example.com');
     expect(stored.passwordHash).toBeDefined();
-    expect(stored.passwordHash).not.toBe('supersecret');
-    expect(await bcrypt.compare('supersecret', stored.passwordHash)).toBe(true);
+    expect(stored.passwordHash).not.toBe(GOOD_PASSWORD);
+    expect(await bcrypt.compare(GOOD_PASSWORD, stored.passwordHash)).toBe(true);
   });
 
   test('201: name is optional (defaults to null)', async () => {
     const res = await request(app)
       .post('/register')
-      .send({ email: 'noname@example.com', password: 'longenough' });
+      .send({ email: 'noname@example.com', password: GOOD_PASSWORD });
 
     expect(res.status).toBe(201);
     expect(res.body.name).toBeNull();
   });
 
   test('400: missing email', async () => {
-    const res = await request(app).post('/register').send({ password: 'longenough' });
+    const res = await request(app).post('/register').send({ password: GOOD_PASSWORD });
     expect(res.status).toBe(400);
     expect(res.body.details).toContain('email is required');
   });
@@ -69,7 +71,7 @@ describe('POST /register', () => {
   test('400: invalid email format', async () => {
     const res = await request(app)
       .post('/register')
-      .send({ email: 'not-an-email', password: 'longenough' });
+      .send({ email: 'not-an-email', password: GOOD_PASSWORD });
     expect(res.status).toBe(400);
     expect(res.body.details).toContain('email must be a valid email address');
   });
@@ -77,9 +79,41 @@ describe('POST /register', () => {
   test('400: weak (too short) password', async () => {
     const res = await request(app)
       .post('/register')
-      .send({ email: 'weak@example.com', password: 'short' });
+      .send({ email: 'weak@example.com', password: 'Sh0rt!' });
     expect(res.status).toBe(400);
     expect(res.body.details).toContain('password must be at least 8 characters');
+  });
+
+  test('400: password missing uppercase', async () => {
+    const res = await request(app)
+      .post('/register')
+      .send({ email: 'nocaps@example.com', password: 'sup3rsecret!' });
+    expect(res.status).toBe(400);
+    expect(res.body.details).toContain('password must contain at least one uppercase letter');
+  });
+
+  test('400: password missing lowercase', async () => {
+    const res = await request(app)
+      .post('/register')
+      .send({ email: 'nolower@example.com', password: 'SUP3RSECRET!' });
+    expect(res.status).toBe(400);
+    expect(res.body.details).toContain('password must contain at least one lowercase letter');
+  });
+
+  test('400: password missing digit', async () => {
+    const res = await request(app)
+      .post('/register')
+      .send({ email: 'nodigit@example.com', password: 'SuperSecret!' });
+    expect(res.status).toBe(400);
+    expect(res.body.details).toContain('password must contain at least one digit');
+  });
+
+  test('400: password missing special character', async () => {
+    const res = await request(app)
+      .post('/register')
+      .send({ email: 'nospecial@example.com', password: 'Sup3rSecret' });
+    expect(res.status).toBe(400);
+    expect(res.body.details).toContain('password must contain at least one special character');
   });
 
   test('400: malformed JSON body', async () => {
@@ -94,11 +128,11 @@ describe('POST /register', () => {
   test('409: duplicate email (case-insensitive)', async () => {
     await request(app)
       .post('/register')
-      .send({ email: 'dup@example.com', password: 'longenough' });
+      .send({ email: 'dup@example.com', password: GOOD_PASSWORD });
 
     const res = await request(app)
       .post('/register')
-      .send({ email: 'DUP@example.com', password: 'anotherlongpw' });
+      .send({ email: 'DUP@example.com', password: 'An0therLongPw!' });
 
     expect(res.status).toBe(409);
     expect(res.body.error).toBe('Email already registered');
