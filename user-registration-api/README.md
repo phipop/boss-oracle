@@ -44,6 +44,43 @@ on startup; the file is gitignored).
 
 > The server warns (without printing the value) if `JWT_SECRET` is unset.
 
+## Docker
+
+Multi-stage build on `node:22-slim` (Debian, not alpine — `better-sqlite3`
+compiles reliably against glibc). The runtime image carries no build toolchain
+and no devDependencies. The DB lives on a volume at `/app/data`, so data
+survives container removal; `JWT_SECRET` is supplied at run time and never
+baked into the image.
+
+### Build & run (plain docker)
+
+```bash
+cd user-registration-api
+docker build -t user-registration-api:latest .
+
+docker run -d --name ureg \
+  -p 3000:3000 \
+  -e JWT_SECRET="$(openssl rand -hex 32)" \
+  -v ureg-data:/app/data \
+  user-registration-api:latest
+# -> http://localhost:3000  (frontend at / and /login.html)
+```
+
+`-v ureg-data:/app/data` is a named volume; the SQLite file (and its
+`-wal`/`-shm` siblings) persist there across `docker rm` / restart.
+
+### docker compose
+
+```bash
+# JWT_SECRET is required; compose refuses to start without it.
+JWT_SECRET="$(openssl rand -hex 32)" docker compose up --build -d
+docker compose down       # stop; named volume `userdata` keeps the data
+```
+
+Override any env var from the table above on the `docker run -e` line or the
+compose environment. The container always listens on port 3000 internally
+(`HEALTHCHECK` hits `GET /health`); map it to any host port with `-p`.
+
 ## Test
 
 ```bash
@@ -153,6 +190,9 @@ user-registration-api/
 ├── package.json
 ├── README.md
 ├── .gitignore
+├── Dockerfile              # multi-stage build (node:22-slim)
+├── .dockerignore
+├── docker-compose.yml      # service + named volume + healthcheck
 ├── data/                   # SQLite db files live here (gitignored)
 ├── src/
 │   ├── app.js              # builds the Express app (CORS, rate limit, routes, error handler)
