@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>Create account</h1>
+    <p class="subtitle">Register to get started</p>
+
+    <form id="registerForm" novalidate>
+      <label for="name">Name <span style="color:#64748b">(optional)</span></label>
+      <input type="text" id="name" name="name" autocomplete="name" placeholder="Your name" />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required autocomplete="new-password" placeholder="••••••••" />
+      <p class="hint">8–128 chars · upper &amp; lower case · digit · special character required</p>
+
+      <button type="submit" id="submitBtn">Create account</button>
+    </form>
+
+    <div class="message" id="message"></div>
+
+    <p class="switch">Already have an account? <a href="login.html">Sign in</a></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const msg = document.getElementById('message');
+
+    function showMessage(text, isOk) {
+      msg.className = 'message show ' + (isOk ? 'ok' : 'err');
+      msg.textContent = text;
+    }
+
+    function showErrors(errors) {
+      msg.className = 'message show err';
+      if (Array.isArray(errors) && errors.length) {
+        msg.innerHTML = 'Please fix the following:<ul>' +
+          errors.map(e => '<li>' + escapeHtml(e) + '</li>').join('') +
+          '</ul>';
+      } else {
+        msg.textContent = errors;
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.className = 'message';
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const name = document.getElementById('name').value.trim();
+
+      const body = { email, password };
+      if (name) body.name = name;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account…';
+
+      try {
+        const res = await fetch('/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json();
+
+        if (res.status === 201) {
+          const display = data.name
+            ? 'Welcome, ' + escapeHtml(data.name) + '! Account created for ' + escapeHtml(data.email) + '.'
+            : 'Account created for ' + escapeHtml(data.email) + '.';
+          showMessage(display, true);
+          form.reset();
+        } else if (res.status === 400 && data.errors) {
+          showErrors(data.errors);
+        } else {
+          showMessage(data.error || 'Registration failed. Please try again.', false);
+        }
+      } catch (err) {
+        showMessage('Network error — could not reach the server.', false);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create account';
+      }
+    });
+  </script>
+</body>
+</html>

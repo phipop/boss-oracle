@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
@@ -37,6 +38,9 @@ function createApp(opts = {}) {
   app.use(cors({ origin }));
 
   app.use(express.json({ limit: '16kb' }));
+
+  // Serve static files (HTML/CSS/JS frontend) from the public/ directory
+  app.use(express.static(path.join(__dirname, '../public')));
 
   app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
