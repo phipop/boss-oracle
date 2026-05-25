@@ -1,0 +1,159 @@
+/* Shared styles for the auth pages — plain CSS, no framework. */
+
+:root {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --fg: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --ok-bg: #052e1a;
+  --ok-fg: #4ade80;
+  --err-bg: #3a1212;
+  --err-fg: #f87171;
+  --border: #334155;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+}
+
+.subtitle {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+label {
+  display: block;
+  margin: 0.9rem 0 0.35rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+input {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  font-size: 1rem;
+  color: var(--fg);
+  background: #0b1220;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+button {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.7rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 1.25rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: none;
+}
+
+.message.show {
+  display: block;
+}
+
+.message.ok {
+  background: var(--ok-bg);
+  color: var(--ok-fg);
+}
+
+.message.err {
+  background: var(--err-bg);
+  color: var(--err-fg);
+}
+
+.message ul {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.token {
+  display: block;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.72rem;
+  background: #0b1220;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  word-break: break-all;
+}
+
+.switch {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.switch a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.switch a:hover {
+  text-decoration: underline;
+}

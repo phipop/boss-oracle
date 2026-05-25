@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>Sign in</h1>
+    <p class="subtitle">Welcome back</p>
+
+    <form id="loginForm" novalidate>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
+
+      <button type="submit" id="submitBtn">Sign in</button>
+    </form>
+
+    <div class="message" id="message"></div>
+
+    <p class="switch">No account yet? <a href="index.html">Register</a></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const msg = document.getElementById('message');
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function showMessage(html, isOk) {
+      msg.className = 'message show ' + (isOk ? 'ok' : 'err');
+      msg.innerHTML = html;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.className = 'message';
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in…';
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (res.status === 200 && data.token) {
+          localStorage.setItem('authToken', data.token);
+          showMessage(
+            'Signed in successfully!<br/>' +
+            '<span class="token">' + escapeHtml(data.token) + '</span>',
+            true
+          );
+          form.reset();
+        } else {
+          showMessage(escapeHtml(data.error || 'Sign-in failed. Check your credentials.'), false);
+        }
+      } catch (err) {
+        showMessage('Network error — could not reach the server.', false);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign in';
+      }
+    });
+  </script>
+</body>
+</html>
