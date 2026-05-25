@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<title>เข้าสู่ระบบ — Krungthai (UI mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* Krungthai "ฟ้ากรุงไทย" palette */
+    --ktb-sky: #00a4e4;
+    --ktb-cyan: #18b4ef;
+    --ktb-blue: #0072bc;
+    --ktb-deep: #004a8f;
+    --ktb-navy: #00366b;
+    --ink: #0d2438;
+    --muted: #6b8198;
+    --line: #dce6ef;
+    --field-bg: #f4f8fb;
+    --white: #ffffff;
+    --radius: 16px;
+    --shadow: 0 18px 50px -18px rgba(0, 54, 107, .45);
+    font-synthesis-weight: none;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: "IBM Plex Sans Thai", "IBM Plex Sans", "Noto Sans Thai",
+                 system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink);
+    /* ฟ้ากรุงไทย: ฟ้าสด → น้ำเงินเข้ม */
+    background:
+      radial-gradient(120% 80% at 80% -10%, rgba(255,255,255,.28), transparent 55%),
+      radial-gradient(140% 90% at -10% 0%, var(--ktb-cyan), transparent 45%),
+      linear-gradient(160deg, var(--ktb-sky) 0%, var(--ktb-blue) 46%, var(--ktb-deep) 100%);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* decorative soft waves in the blue field */
+  .sky {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .sky::before, .sky::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.20), rgba(255,255,255,0) 70%);
+  }
+  .sky::before { width: 460px; height: 460px; top: -160px; right: -120px; }
+  .sky::after  { width: 360px; height: 360px; bottom: 12%; left: -140px; opacity: .7; }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: env(safe-area-inset-top) 20px 28px;
+  }
+
+  /* ---- brand / logo block ---- */
+  .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    color: #fff;
+    text-align: center;
+    margin: clamp(36px, 9vh, 84px) 0 22px;
+  }
+  .crest {
+    width: 88px;
+    height: 88px;
+    display: grid;
+    place-items: center;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .35);
+    box-shadow: 0 10px 30px -10px rgba(0, 32, 64, .6), inset 0 1px 0 rgba(255,255,255,.4);
+    backdrop-filter: blur(4px);
+  }
+  .crest svg { width: 58px; height: 58px; display: block; }
+  .wordmark {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+  }
+  .wordmark .th {
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: .5px;
+  }
+  .wordmark .en {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: .9;
+    margin-top: 4px;
+  }
+
+  /* ---- login card ---- */
+  .card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 26px 22px 22px;
+  }
+  .card h1 {
+    font-size: 21px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .card .sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #38566e;
+    margin-bottom: 7px;
+  }
+  .control {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .control .lead {
+    position: absolute;
+    left: 14px;
+    display: grid;
+    place-items: center;
+    color: var(--ktb-blue);
+    pointer-events: none;
+  }
+  .control input {
+    width: 100%;
+    height: 52px;
+    border: 1.5px solid var(--line);
+    background: var(--field-bg);
+    border-radius: 12px;
+    padding: 0 46px 0 44px;
+    font: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+  }
+  .control input::placeholder { color: #9fb2c4; }
+  .control input:focus {
+    border-color: var(--ktb-sky);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 164, 228, .15);
+  }
+  .toggle {
+    position: absolute;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    border-radius: 9px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+  }
+  .toggle:hover { color: var(--ktb-blue); background: #eef5fa; }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 6px 0 20px;
+    font-size: 13.5px;
+  }
+  .remember {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #38566e;
+    cursor: pointer;
+    user-select: none;
+  }
+  .remember input { width: 17px; height: 17px; accent-color: var(--ktb-sky); }
+  .link {
+    color: var(--ktb-blue);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .link:hover { text-decoration: underline; }
+
+  .btn {
+    width: 100%;
+    height: 52px;
+    border: 0;
+    border-radius: 26px;
+    background: linear-gradient(135deg, var(--ktb-sky), var(--ktb-blue));
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 12px 26px -10px rgba(0, 114, 188, .8);
+    transition: transform .08s, box-shadow .15s, filter .15s;
+  }
+  .btn:hover { filter: brightness(1.04); }
+  .btn:active { transform: translateY(1px); }
+  .btn[disabled] { cursor: default; filter: saturate(.8) brightness(.98); }
+  .btn.ok { background: linear-gradient(135deg, #1bb673, #0f9d63); box-shadow: 0 12px 26px -10px rgba(15,157,99,.7); }
+
+  .spinner {
+    width: 19px; height: 19px;
+    border: 2.5px solid rgba(255,255,255,.45);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .alt {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .alt a { color: var(--ktb-blue); font-weight: 600; text-decoration: none; }
+  .alt a:hover { text-decoration: underline; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0 4px;
+    color: #aebccb;
+    font-size: 12.5px;
+  }
+  .divider::before, .divider::after {
+    content: ""; height: 1px; flex: 1; background: var(--line);
+  }
+
+  /* footer / disclaimer */
+  .foot {
+    position: relative;
+    z-index: 1;
+    max-width: 400px;
+    margin: 18px auto 0;
+    padding: 0 24px;
+    text-align: center;
+    color: rgba(255,255,255,.85);
+    font-size: 11.5px;
+    line-height: 1.5;
+  }
+  .badge {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.35);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: .3px;
+  }
+
+  /* desktop: keep mobile feel, just center + breathe */
+  @media (min-width: 760px) {
+    .wrap { padding-top: 0; justify-content: center; }
+    .brand { margin: 0 0 24px; }
+    .card { padding: 30px 30px 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation: none; }
+    .btn:active { transform: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="sky" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <header class="brand">
+      <div class="crest" aria-hidden="true">
+        <!-- Vayupak (วายุภักษ์) — stylized bird emblem, recreated (not the official KTB trademark file) -->
+        <svg viewBox="0 0 64 64" role="img" aria-label="ตรานกวายุภักษ์ (จำลอง)">
+          <defs>
+            <linearGradient id="feather" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffffff"/>
+              <stop offset="1" stop-color="#d8f1fd"/>
+            </linearGradient>
+          </defs>
+          <!-- body -->
+          <path fill="url(#feather)" d="M32 7c2.6 3.4 3.5 7.1 2.7 11.2 3.1-1.7 6.4-2 9.9-1.1-2 2.7-4.6 4.4-7.8 5.2 3.9.6 7.1 2.6 9.7 5.9-3.6.5-6.9-.1-9.9-1.8 1.8 3.3 2.3 6.8 1.4 10.6-2.7-2.3-4.4-5.1-5.1-8.6-.7 3.5-2.4 6.3-5.1 8.6-.9-3.8-.4-7.3 1.4-10.6-3 1.7-6.3 2.3-9.9 1.8 2.6-3.3 5.8-5.3 9.7-5.9-3.2-.8-5.8-2.5-7.8-5.2 3.5-.9 6.8-.6 9.9 1.1C28.5 14.1 29.4 10.4 32 7Z"/>
+          <!-- tail / lower plume -->
+          <path fill="url(#feather)" opacity=".95" d="M32 33.5c1.7 2.9 2.6 6 2.7 9.4.1 4.6-1 9-2.7 13.1-1.7-4.1-2.8-8.5-2.7-13.1.1-3.4 1-6.5 2.7-9.4Z"/>
+          <!-- side plumes -->
+          <path fill="url(#feather)" opacity=".8" d="M26.5 35c-.2 4.2-1.9 7.9-4.9 11 .1-4.4 1.7-8.2 4.9-11Z"/>
+          <path fill="url(#feather)" opacity=".8" d="M37.5 35c.2 4.2 1.9 7.9 4.9 11-.1-4.4-1.7-8.2-4.9-11Z"/>
+          <circle cx="32" cy="14" r="1.7" fill="#0072bc"/>
+        </svg>
+      </div>
+      <div class="wordmark">
+        <span class="th">กรุงไทย</span>
+        <span class="en">Krungthai</span>
+      </div>
+    </header>
+
+    <section class="card" aria-labelledby="title">
+      <h1 id="title">เข้าสู่ระบบ</h1>
+      <p class="sub">ยินดีต้อนรับ กรุณาเข้าสู่ระบบเพื่อใช้งาน</p>
+
+      <form id="loginForm" novalidate autocomplete="off">
+        <div class="field">
+          <label for="username">ชื่อผู้ใช้ / เลขบัตรประชาชน</label>
+          <div class="control">
+            <span class="lead" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 19.5a7 7 0 0 1 14 0"/></svg>
+            </span>
+            <input id="username" name="username" type="text" inputmode="text"
+                   placeholder="กรอกชื่อผู้ใช้หรือเลขบัตร 13 หลัก" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">รหัสผ่าน</label>
+          <div class="control">
+            <span class="lead" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2.2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
+            </span>
+            <input id="password" name="password" type="password"
+                   placeholder="กรอกรหัสผ่าน" autocomplete="off" />
+            <button type="button" class="toggle" id="togglePw" aria-label="แสดง/ซ่อนรหัสผ่าน" aria-pressed="false">
+              <svg id="eye" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="remember"><input type="checkbox" id="remember" /> จดจำฉันไว้</label>
+          <a class="link" href="#" onclick="return false">ลืมรหัสผ่าน?</a>
+        </div>
+
+        <button type="submit" class="btn" id="submitBtn">เข้าสู่ระบบ</button>
+
+        <div class="divider">หรือ</div>
+        <p class="alt">ยังไม่มีบัญชีผู้ใช้? <a href="#" onclick="return false">ลงทะเบียนใช้งาน</a></p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span class="badge">UI MOCKUP / DESIGN STUDY</span>
+    <div>หน้านี้เป็นแบบจำลองหน้าจอเพื่อ<strong>ฝึกออกแบบ UI เท่านั้น</strong> ไม่ใช่หน้าเข้าสู่ระบบจริงของธนาคารกรุงไทย<br/>
+    ไม่มีการส่งหรือเก็บข้อมูลใด ๆ • โลโก้และชื่อ “กรุงไทย / Krungthai” เป็นเครื่องหมายการค้าของ KTB</div>
+  </footer>
+
+<script>
+  // Password show/hide
+  var pw = document.getElementById('password');
+  var toggle = document.getElementById('togglePw');
+  var eye = document.getElementById('eye');
+  var eyeOpen = '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/>';
+  var eyeOff = '<path d="M3 3l18 18"/><path d="M10.6 6.1A9.7 9.7 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-3.3 3.9"/><path d="M6.3 7.8A16 16 0 0 0 2.5 12S6 18 12 18a9.4 9.4 0 0 0 3.1-.5"/>';
+  toggle.addEventListener('click', function () {
+    var show = pw.type === 'password';
+    pw.type = show ? 'text' : 'password';
+    toggle.setAttribute('aria-pressed', String(show));
+    eye.innerHTML = show ? eyeOff : eyeOpen;
+    pw.focus();
+  });
+
+  // Fake submit — NO network, NO data collection. Loading -> success, then reset.
+  var form = document.getElementById('loginForm');
+  var btn = document.getElementById('submitBtn');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (btn.disabled) return;
+    btn.disabled = true;
+    btn.classList.remove('ok');
+    btn.innerHTML = '<span class="spinner"></span> กำลังเข้าสู่ระบบ…';
+    setTimeout(function () {
+      btn.classList.add('ok');
+      btn.innerHTML = '✓ เข้าสู่ระบบสำเร็จ (เดโม)';
+      setTimeout(function () {
+        btn.classList.remove('ok');
+        btn.disabled = false;
+        btn.textContent = 'เข้าสู่ระบบ';
+      }, 1600);
+    }, 1300);
+  });
+</script>
+</body>
+</html>
