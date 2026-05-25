@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const Database = require('better-sqlite3');
 
@@ -24,6 +25,11 @@ class SqliteUserStore {
   constructor(filename) {
     const file =
       filename || path.join(__dirname, '..', 'data', 'users.sqlite');
+    // better-sqlite3 creates the DB file but not its parent directory, so
+    // ensure it exists first. Skip for the special in-memory database.
+    if (file !== ':memory:') {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+    }
     this.db = new Database(file);
     this.db.pragma('journal_mode = WAL');
     this._initSchema();
