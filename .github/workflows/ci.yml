@@ -1,0 +1,49 @@
+name: CI
+
+# Test gate for user-registration-api. Runs jest on every PR into master and
+# on pushes to master. A red test fails the job (npm test exit code), which
+# turns the check red — wire this as a *required* check in branch protection
+# to block merges (repo-admin setting).
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'user-registration-api/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'user-registration-api/**'
+      - '.github/workflows/ci.yml'
+
+# Cancel superseded runs on the same ref to save minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (Node 22)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: user-registration-api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: user-registration-api/package-lock.json
+
+      # Compiles/fetches the better-sqlite3 native binary on the runner.
+      - name: Install dependencies
+        run: npm ci
+
+      # Tests use the in-memory store — no DB, no JWT_SECRET, no secrets needed.
+      - name: Run tests
+        run: npm test
